@@ -996,7 +996,6 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .rsvp-dialog .guest-counts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .rsvp-dialog .guest-counts label{min-width:0}
 .rsvp-dialog .count-hint{margin:-4px 0 0;font:400 12px/1.4 Montserrat,sans-serif;color:#775b47;text-align:left}
-/* Mehvash & Raju card: monogram and quote */
-.paper-monogram{display:flex;justify-content:center;align-items:flex-end;gap:0;margin:4px auto 10px;font:400 clamp(54px,11vw,78px)/1 'Great Vibes','Cormorant Garamond',cursive;color:#7e0f2b}
-.paper-monogram span:last-child{margin-left:-.18em;transform:translateY(.22em);color:#b8862f}
+/* Mehvash & Raju card: M&R logo and quote */
+.invitation-paper .paper-monogram-logo{display:block;width:clamp(150px,42vw,230px);height:auto;margin:2px auto 8px}
 .invitation-paper .wedding-quote{max-width:520px;margin:6px auto 4px;font:italic 500 clamp(17px,2.4vw,21px)/1.5 'Cormorant Garamond',serif;color:#5e4637}
