@@ -721,7 +721,7 @@ body.invite-open #invite{display:block!important;}
 .hosts{font-size:clamp(18px,2.6vw,24px);color:#6f1728}
 .invite-phrase{font:italic 20px/1.4 "Cormorant Garamond",Georgia,serif;margin:15px auto}
 .paper-title{font:500 clamp(39px,7vw,64px)/1.1 "Great Vibes","Cormorant Garamond",serif;color:#8b122a;margin:16px 0}
-.paper-names{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:7px 16px;margin:15px 0;color:#85122a;font:500 clamp(42px,7vw,65px)/1.15 "Great Vibes","Cormorant Garamond",serif}
+.paper-names{display:flex;flex-direction:column;flex-wrap:nowrap;justify-content:center;align-items:center;text-align:center;gap:5px;margin:15px 0;color:#85122a;font:500 clamp(42px,7vw,65px)/1.15 "Great Vibes","Cormorant Garamond",serif}
 .paper-names b{font:400 30px "Cormorant Garamond",serif;color:#bd873c}
 .parents,.hijri{font:400 17px/1.5 "Cormorant Garamond",Georgia,serif;margin:10px 0}
 .paper-date{display:grid;gap:5px;color:#81182a}.paper-date strong{font:600 clamp(23px,3.6vw,32px)/1.2 "Cormorant Garamond",Georgia,serif}.paper-date span{font:600 22px "Cormorant Garamond",Georgia,serif}
@@ -729,7 +729,7 @@ body.invite-open #invite{display:block!important;}
 
 .dress-note{font:italic 18px "Cormorant Garamond",Georgia,serif;color:#7c2630;margin-top:18px;padding-bottom:32px}
 #countdown,.rsvp-section{max-width:820px;margin:0 auto 35px!important;border:1px solid #d3a45c!important;background:#fff9f0!important;box-shadow:0 10px 35px #63371e13!important;padding:35px 18px!important}
-@media(max-width:600px){.invitation-paper{padding:45px 24px;border-width:1px}.invitation-paper:before{inset:9px}.paper-corner{width:34%;opacity:.7}.paper-ornament{padding-top:38px}.paper-content{padding:0 5px}.paper-names{gap:0 10px}.invitation-paper .blessing-copy{font-size:14px}}
+@media(max-width:600px){.invitation-paper{padding:45px 24px;border-width:1px}.invitation-paper:before{inset:9px}.paper-corner{width:34%;opacity:.7}.paper-ornament{padding-top:38px}.paper-content{padding:0 5px}.paper-names{gap:5px}.invitation-paper .blessing-copy{font-size:14px}}
 
 /* Coordinated royal action buttons, countdown and RSVP */
 .countdown-flourish{font-size:24px;color:#ba803a;letter-spacing:.16em;margin:14px 0 20px;text-align:center}
@@ -945,7 +945,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   padding-left:calc(var(--fr-inset) + clamp(14px,4.5vw,50px))!important;padding-right:calc(var(--fr-inset) + clamp(14px,4.5vw,50px))!important}
 .paper-content{padding-left:0!important;padding-right:0!important}
 .invitation-paper .blessing-copy{font-size:clamp(13.5px,1.9vw,16px)!important}
-.paper-names{flex-wrap:wrap;justify-content:center}
+.paper-names{flex-wrap:nowrap;justify-content:center}
 .royal-actions{flex-wrap:wrap;justify-content:center}
 
 /* RSVP pop-up: fits any screen, matching floral corners */
