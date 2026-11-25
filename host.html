@@ -91,8 +91,8 @@ const endpoint = String(window.WEDDING_RSVP_ENDPOINT || '').trim();
 const $ = id => document.getElementById(id);
 const KEY_STORE = 'weddingHostKey';
 const COLUMNS = {
-  reception: [['receivedAt','Received'],['name','Name'],['attending','Attending'],['guests','Guests',1]],
-  mehvash_raju: [['receivedAt','Received'],['name','Name'],['attending','Attending'],['guests','Guests',1]],
+  reception: [['receivedAt','Received'],['name','Name'],['attending','Attending'],['guests','Guests',1],['food','Food']],
+  mehvash_raju: [['receivedAt','Received'],['name','Name'],['attending','Attending'],['guests','Guests',1],['food','Food']],
   mehendi:   [['receivedAt','Received'],['name','Name'],['attending','Attending'],['ladies','Ladies',1],['gents','Gents',1],['guests','Total',1]]
 };
 const cache = {};
@@ -136,7 +136,10 @@ function render() {
   const yes = rows.filter(r => r.attending === 'Yes'), no = rows.filter(r => r.attending === 'No');
   $('stats').innerHTML = current === 'mehendi'
     ? stat('Ladies attending', sum(yes, 'ladies')) + stat('Gents attending', sum(yes, 'gents')) + stat('Total attending', sum(yes, 'guests')) + stat('Accepted / declined', yes.length + ' / ' + no.length)
-    : stat('People attending', sum(yes, 'guests')) + stat('Accepted', yes.length) + stat('Declined', no.length) + stat('Total responses', rows.length)
+    : stat('People attending', sum(yes, 'guests'))
+      + stat('Vegetarian (people)', sum(yes.filter(r => r.food === 'Vegetarian'), 'guests'))
+      + stat('Non-veg (people)', sum(yes.filter(r => r.food === 'Non-vegetarian'), 'guests'))
+      + stat('Accepted / declined', yes.length + ' / ' + no.length) + stat('Total responses', rows.length)
       + stat('Reception total (both cards)', ['reception', 'mehvash_raju'].reduce((a, ev) => a + sum((cache[ev] || []).filter(r => r.attending === 'Yes'), 'guests'), 0));
 
   const cols = COLUMNS[current];

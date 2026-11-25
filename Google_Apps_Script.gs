@@ -22,13 +22,15 @@ const SHEET_ID = '';
 const EVENTS = {
   reception: {
     sheet: 'Reception',
-    headers: ['Received at', 'Guest name', 'Attendance', 'Number of guests', 'Submitted at', 'Source', 'Receipt'],
-    receiptCol: 7
+    headers: ['Received at', 'Guest name', 'Attendance', 'Number of guests', 'Food preference', 'Submitted at', 'Source', 'Receipt'],
+    foodCol: 5,
+    receiptCol: 8
   },
   mehvash_raju: {
     sheet: 'Mehvash & Raju',
-    headers: ['Received at', 'Guest name', 'Attendance', 'Number of guests', 'Submitted at', 'Source', 'Receipt'],
-    receiptCol: 7
+    headers: ['Received at', 'Guest name', 'Attendance', 'Number of guests', 'Food preference', 'Submitted at', 'Source', 'Receipt'],
+    foodCol: 5,
+    receiptCol: 8
   },
   mehendi: {
     sheet: 'Mehendi',
@@ -37,6 +39,7 @@ const EVENTS = {
   }
 };
 const SUMMARY_NAME = 'Summary';
+const FOOD_CHOICES = ['Vegetarian', 'Non-vegetarian'];
 
 /* ---------- helpers ---------- */
 
@@ -67,8 +70,16 @@ function getSheet_(key) {
     sheet.appendRow(cfg.headers);
     sheet.getRange(1, 1, 1, cfg.headers.length).setFontWeight('bold');
     sheet.setFrozenRows(1);
-  } else if (String(sheet.getRange(1, cfg.receiptCol).getValue()) !== 'Receipt') {
-    sheet.getRange(1, cfg.receiptCol).setValue('Receipt');
+  } else {
+    // Sheets made before food preference existed: insert the column after "Number of guests".
+    // Existing rows move one column to the right; their food cell stays empty.
+    if (cfg.foodCol && String(sheet.getRange(1, cfg.foodCol).getValue()) !== 'Food preference') {
+      sheet.insertColumnAfter(cfg.foodCol - 1);
+      sheet.getRange(1, cfg.foodCol).setValue('Food preference').setFontWeight('bold');
+    }
+    if (String(sheet.getRange(1, cfg.receiptCol).getValue()) !== 'Receipt') {
+      sheet.getRange(1, cfg.receiptCol).setValue('Receipt');
+    }
   }
   return sheet;
 }
@@ -78,31 +89,39 @@ function writeSummary_() {
   let s = book.getSheetByName(SUMMARY_NAME);
   if (!s) s = book.insertSheet(SUMMARY_NAME);
   s.clear();
-  const rows = [
-    ['RECEPTION — Friday 18 December 2026 (wedding.html)', ''],
-    ['People attending', '=SUMIF(Reception!C2:C,"Yes",Reception!D2:D)'],
-    ['Responses: accepted', '=COUNTIF(Reception!C2:C,"Yes")'],
-    ['Responses: declined', '=COUNTIF(Reception!C2:C,"No")'],
-    ['Total responses', '=COUNTA(Reception!B2:B)'],
-    ['', ''],
-    ['MEHVASH & RAJU — same reception (mehvash_raju_wedding.html)', ''],
-    ['People attending', "=SUMIF('Mehvash & Raju'!C2:C,\"Yes\",'Mehvash & Raju'!D2:D)"],
-    ['Responses: accepted', "=COUNTIF('Mehvash & Raju'!C2:C,\"Yes\")"],
-    ['Responses: declined', "=COUNTIF('Mehvash & Raju'!C2:C,\"No\")"],
-    ['Total responses', "=COUNTA('Mehvash & Raju'!B2:B)"],
-    ['', ''],
-    ['RECEPTION — people attending from BOTH cards', '=B2+B8'],
-    ['', ''],
-    ['MEHENDI — Thursday 17 December 2026 (mehendi.html)', ''],
-    ['Ladies attending', '=SUMIF(Mehendi!C2:C,"Yes",Mehendi!D2:D)'],
-    ['Gents attending', '=SUMIF(Mehendi!C2:C,"Yes",Mehendi!E2:E)'],
-    ['People attending (total)', '=SUMIF(Mehendi!C2:C,"Yes",Mehendi!F2:F)'],
-    ['Responses: accepted / declined', '=COUNTIF(Mehendi!C2:C,"Yes")&" / "&COUNTIF(Mehendi!C2:C,"No")'],
-    ['Total responses', '=COUNTA(Mehendi!B2:B)']
-  ];
+  const q = name => "'" + name + "'";
+  const receptionBlock = (title, tab) => {
+    const t = q(tab);
+    return [
+      [title, ''],
+      ['People attending', '=SUMIF(' + t + '!C2:C,"Yes",' + t + '!D2:D)'],
+      ['  Vegetarian (people)', '=SUMIFS(' + t + '!D2:D,' + t + '!C2:C,"Yes",' + t + '!E2:E,"Vegetarian")'],
+      ['  Non-vegetarian (people)', '=SUMIFS(' + t + '!D2:D,' + t + '!C2:C,"Yes",' + t + '!E2:E,"Non-vegetarian")'],
+      ['Responses: accepted', '=COUNTIF(' + t + '!C2:C,"Yes")'],
+      ['Responses: declined', '=COUNTIF(' + t + '!C2:C,"No")'],
+      ['Total responses', '=COUNTA(' + t + '!B2:B)'],
+      ['', '']
+    ];
+  };
+  const rows = [].concat(
+    receptionBlock('RECEPTION — Friday 18 December 2026 (wedding.html)', 'Reception'),       // rows 1-8
+    receptionBlock('MEHVASH & RAJU — same reception (mehvash_raju_wedding.html)', 'Mehvash & Raju'), // rows 9-16
+    [
+      ['RECEPTION — people attending from BOTH cards', '=B2+B10'],
+      ['  Vegetarian (people)', '=B3+B11'],
+      ['  Non-vegetarian (people)', '=B4+B12'],
+      ['', ''],
+      ['MEHENDI — Thursday 17 December 2026 (mehendi.html)', ''],
+      ['Ladies attending', '=SUMIF(Mehendi!C2:C,"Yes",Mehendi!D2:D)'],
+      ['Gents attending', '=SUMIF(Mehendi!C2:C,"Yes",Mehendi!E2:E)'],
+      ['People attending (total)', '=SUMIF(Mehendi!C2:C,"Yes",Mehendi!F2:F)'],
+      ['Responses: accepted / declined', '=COUNTIF(Mehendi!C2:C,"Yes")&" / "&COUNTIF(Mehendi!C2:C,"No")'],
+      ['Total responses', '=COUNTA(Mehendi!B2:B)']
+    ]
+  );
   s.getRange(1, 1, rows.length, 2).setValues(rows);
-  ['A1', 'A7', 'A13', 'B13', 'A15'].forEach(a => s.getRange(a).setFontWeight('bold'));
-  s.setColumnWidth(1, 260);
+  ['A1', 'A9', 'A17', 'B17', 'A21'].forEach(a => s.getRange(a).setFontWeight('bold'));
+  s.setColumnWidth(1, 300);
 }
 
 // Stops spreadsheet formula injection (a name starting with = + - @)
@@ -156,7 +175,8 @@ function saveRsvp_(p) {
     row = [new Date(), safeCell_(name), attending, ladies, gents, ladies + gents];
   } else {
     const guests = attending === 'No' ? 0 : Math.max(1, count_(p.guests));
-    row = [new Date(), safeCell_(name), attending, guests];
+    const food = attending === 'Yes' && FOOD_CHOICES.indexOf(String(p.food)) !== -1 ? String(p.food) : '';
+    row = [new Date(), safeCell_(name), attending, guests, food];
   }
   row.push(safeCell_(String(p.submittedAt || '').slice(0, 50)), safeCell_(String(p.source || '').slice(0, 60)), receipt);
 
@@ -209,13 +229,13 @@ function doGet(e) {
       if (!key) return reply({ ok: false, error: 'Unknown event.' });
       const sheet = getSheet_(key);
       const last = sheet.getLastRow();
-      const width = key === 'mehendi' ? 6 : 4;  // reception & mehvash_raju share the 4-column layout
+      const width = key === 'mehendi' ? 6 : 5;  // reception & mehvash_raju: ... guests, food
       const clean = v => String(v).replace(/^'/, '');
       const rows = last < 2 ? [] : sheet.getRange(2, 1, last - 1, width).getValues()
         .filter(r => String(r[1]).trim() !== '')
         .map(r => key === 'mehendi'
           ? { receivedAt: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), name: clean(r[1]), attending: String(r[2]), ladies: Number(r[3]) || 0, gents: Number(r[4]) || 0, guests: Number(r[5]) || 0 }
-          : { receivedAt: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), name: clean(r[1]), attending: String(r[2]), guests: Number(r[3]) || 0 });
+          : { receivedAt: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), name: clean(r[1]), attending: String(r[2]), guests: Number(r[3]) || 0, food: String(r[4] || '') });
       return reply({ ok: true, event: key, rows: rows });
     }
 
@@ -236,7 +256,7 @@ function setup() {
 
 // Optional: run from the editor to confirm saving works for both events (delete the test rows after).
 function testSave() {
-  Logger.log(JSON.stringify(saveRsvp_({ event: 'reception', name: 'TEST GUEST (editor)', attending: 'Yes', guests: 2, receipt: 'editor_test_r' + Date.now(), source: 'Apps Script editor' })));
+  Logger.log(JSON.stringify(saveRsvp_({ event: 'reception', name: 'TEST GUEST (editor)', attending: 'Yes', guests: 2, food: 'Vegetarian', receipt: 'editor_test_r' + Date.now(), source: 'Apps Script editor' })));
   Logger.log(JSON.stringify(saveRsvp_({ event: 'mehvash_raju', name: 'TEST GUEST (editor)', attending: 'Yes', guests: 2, receipt: 'editor_test_j' + Date.now(), source: 'Apps Script editor' })));
   Logger.log(JSON.stringify(saveRsvp_({ event: 'mehendi', name: 'TEST GUEST (editor)', attending: 'Yes', ladies: 2, gents: 1, receipt: 'editor_test_m' + Date.now(), source: 'Apps Script editor' })));
 }

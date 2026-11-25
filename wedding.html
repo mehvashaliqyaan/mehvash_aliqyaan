@@ -42,7 +42,7 @@
 <p class="invite-phrase">request the pleasure of your company to celebrate the</p>
 <h1 class="paper-title">Wedding Reception</h1>
 <p class="invite-phrase">of our beloved granddaughter &amp; daughter</p>
-<div class="paper-names">
+<div class="paper-names paper-names-stacked">
     <span>Mehvash</span>
     <b>&amp;</b>
     <span>Aliqyaan (Raju)</span>
@@ -111,6 +111,7 @@
 <label><span class="field-label">Full name</span><input autocomplete="name" maxlength="100" name="name" required placeholder="Your full name" /></label>
 <label><span class="field-label">Number of guests</span><input max="20" min="1" name="guests" required type="number" inputmode="numeric" value="1" data-count /></label>
 <fieldset class="attendance-options"><legend>Will you be attending?</legend><label><input type="radio" name="attending" value="Yes" required checked /><span>Joyfully accepts</span></label><label><input type="radio" name="attending" value="No" required /><span>Regretfully declines</span></label></fieldset>
+<fieldset class="attendance-options food-options" id="foodOptions"><legend>Food preference</legend><label><input type="radio" name="food" value="Vegetarian" required /><span>Vegetarian</span></label><label><input type="radio" name="food" value="Non-vegetarian" required /><span>Non-vegetarian</span></label></fieldset>
 <button class="royal-action royal-action-button submit-rsvp" type="submit"><span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></span> <span id="submitLabel">Send RSVP</span></button>
 <p id="rsvpStatus" role="status" aria-live="polite"></p>
 </form><p class="local-note" id="rsvpModeNote"></p></div></div>

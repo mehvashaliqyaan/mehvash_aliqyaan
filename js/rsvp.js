@@ -8,6 +8,7 @@ const endpoint = String(window.WEDDING_RSVP_ENDPOINT || '').trim();
 const configured = /^https:\/\/script\.google\.com\/(?:a\/[^/]+\/)?macros\/s\/[^\s/]+\/exec$/.test(endpoint);
 const eventKey = (form.dataset.event || 'reception').toLowerCase();
 const countInputs = Array.from(form.querySelectorAll('input[data-count]'));
+const foodOptions = form.querySelector('.food-options'); // only on pages that ask for food preference
 let pending = false;
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
@@ -23,6 +24,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hid
 
 function syncGuests() {
   const no = form.querySelector('input[name="attending"][value="No"]');
+  if (foodOptions) foodOptions.disabled = no.checked; // not needed when declining
   countInputs.forEach(input => {
     input.disabled = no.checked;
     if (no.checked) { input.dataset.saved = input.value; input.value = '0'; }
@@ -112,6 +114,7 @@ form.addEventListener('submit', async e => {
   }
   data.receipt = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : ('r' + Date.now() + Math.random().toString(36).slice(2));
   data.submittedAt = new Date().toISOString();
+  if (!yes) delete data.food;
   data.source = eventKey === 'mehendi' ? 'Mehendi website' : 'Reception website';
 
   pending = true; submit.disabled = true; closeButton.disabled = true;
@@ -123,7 +126,7 @@ form.addEventListener('submit', async e => {
       const who = eventKey === 'mehendi'
         ? [data.ladies ? plural(data.ladies, 'lady', 'ladies') : '', data.gents ? plural(data.gents, 'gent', 'gents') : ''].filter(Boolean).join(' and ')
         : plural(data.guests, 'guest', 'guests');
-      message('Thank you, ' + data.name + '! We are delighted you will celebrate with us. Your RSVP for ' + who + ' has been confirmed.', 'success');
+      message('Thank you, ' + data.name + '! We are delighted you will celebrate with us. Your RSVP for ' + who + (data.food ? ' (' + data.food.toLowerCase() + ')' : '') + ' has been confirmed.', 'success');
     }
     else message('Thank you for letting us know, ' + data.name + '. We will miss you and appreciate your warm wishes. Your response has been recorded.', 'success');
     form.reset(); countInputs.forEach(i => delete i.dataset.saved); syncGuests();
